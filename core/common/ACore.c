@@ -1,6 +1,5 @@
 #include "ACore.h"
 
-
 /*
 INITIALIZATION OF BASIC CORE MODULES:
 --ALLEGRO
@@ -10,8 +9,7 @@ INITIALIZATION OF BASIC CORE MODULES:
 --ALLEGRO PRIMITIVES
 --EVENT QUEUE
 */
-bool coreInit()
-{
+bool coreInit() {
     //modules and add-ons initialization
 	if (!al_init())
     {
@@ -55,8 +53,7 @@ bool coreInit()
 
 
 //FOR INITIALIZING A WINDOW OF WxH SIZE WITH TEXT "title[]"
-bool windowInit(int W, int H, char title[])
-{
+bool windowInit(int W, int H, char title[]) {
     //window and event queue creation
     main_window = al_create_display(W, H);
     if (!main_window)
@@ -74,8 +71,7 @@ bool windowInit(int W, int H, char title[])
 
 
 //FOR INITIALIZING MAIN EXTERNAL INPUTS (KEYBOARD, MOUSE AND CURSOR)
-bool inputInit()
-{
+bool inputInit() {
 	/*------------------------------MOUSE--------------------------------*/
 	//Inicializa Mouse
 	if (!al_install_mouse())
@@ -113,8 +109,7 @@ bool inputInit()
 
 
 //FOR READING KEYBOARD INPUT WITH MAX SIZE = LIMIT AND SAVING AT STR[]
-void readInput(ALLEGRO_EVENT event, char str[], int limit)
-{
+void readInput(ALLEGRO_EVENT event, char str[], int limit) {
     if (event.type == ALLEGRO_EVENT_KEY_CHAR)
     {
         if (strlen(str) <= limit)
@@ -125,17 +120,17 @@ void readInput(ALLEGRO_EVENT event, char str[], int limit)
                 strcat(str, temp);
             }
             else if (event.keyboard.unichar >= '!' &&
-                     event.keyboard.unichar <= '?')
+                        event.keyboard.unichar <= '?')
             {
                 strcat(str, temp);
             }
             else if (event.keyboard.unichar >= 'A' &&
-                     event.keyboard.unichar <= 'Z')
+                        event.keyboard.unichar <= 'Z')
             {
                 strcat(str, temp);
             }
             else if (event.keyboard.unichar >= 'a' &&
-                     event.keyboard.unichar <= 'z')
+                        event.keyboard.unichar <= 'z')
             {
                 strcat(str, temp);
             }
@@ -150,28 +145,16 @@ void readInput(ALLEGRO_EVENT event, char str[], int limit)
 
 
 //FPS CONTROL (FPS IS DEFINED IN ACORE.H)
-void startTimer()
-{
+void startTimer() {
     startingTime = al_get_time();
 }
 
-double getTimer()
-{
-    return al_get_time() - startingTime;
+void FPSLimit() {
+    al_rest((1.0 / FPS) - (al_get_time() - startingTime));
 }
-
-void FPSLimit()
-{
-    if (getTimer() < 1.0/FPS)
-    {
-        al_rest((1.0 / FPS) - getTimer());
-    }
-}
-
 
 //FOR DEALLOCATING ALL ALLEGRO STUFF
-void allegroEnd()
-{
+void allegroEnd() {
     al_destroy_bitmap(objects);
     al_destroy_display(main_window);
     al_destroy_event_queue(eventsQueue);
@@ -179,8 +162,7 @@ void allegroEnd()
 
 
 //MODIFY THIS TO LOAD YOUR OWN FONTS (FONT POINTERS ARE DEFINED AT ACORE.H)
-bool fontInit()
-{
+bool fontInit() {
     /*------------------------------FONTE--------------------------------*/
     start = al_load_font("core/Resources/Fonts/pressStart.ttf", 16, 0);
     if (!start)
@@ -194,12 +176,16 @@ bool fontInit()
 
 
 //MODIFY THIS TO LOAD YOUR OWN GRAPHICS (BITMAP POINTERS ARE DEFINED AT ACORE.H)
-bool loadGraphics()
-{
-
+bool loadGraphics() {
     objects = al_load_bitmap("core/Resources/Tilesets/objects.png");
     if (!objects){
         fprintf(stderr, "Falha carregando objects.png\n");
+        return false;
+    }
+
+    characters = al_load_bitmap("core/Resources/Tilesets/characters.png");
+    if (!objects){
+        fprintf(stderr, "Falha carregando characters.png\n");
         return false;
     }
 

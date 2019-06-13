@@ -1,125 +1,164 @@
 #include <server.h>
 #include <ACore.h>
 
-typedef struct {
-    int id;
-    int hp;
-    int x;
-    int y;
-    int tile;
-    int character;
-} Jogador;
-
-typedef struct {
-    Jogador jogadores[6];
-    int qtdJogadores;
-} Pack;
-
 Pack pack;
 
-void criaJogador(int id){
-    Jogador jogador;
-    jogador.id = id;
-    jogador.hp = 100;
-    jogador.x = 0;
-    jogador.y = 0;
-    jogador.tile = 0;
-    jogador.character = pack.qtdJogadores;
-
-    pack.jogadores[pack.qtdJogadores] = jogador;
-
-    pack.qtdJogadores++;
-}
-
-int buscaJogador(int id){
-    for (int i=0; i<pack.qtdJogadores; i++)
-        if (pack.jogadores[i].id == id)
-            return i;
-    return -1;
-}
-
-short int mapa[20][20] = {{0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-                        {0, 0, 0, 1, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 1},
-                        {0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1},
-                        {0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0},
-                        {0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0, 0},
-                        {0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-                        {0, 1, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1},
-                        {0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0},
-                        {0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0},
-                        {0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-                        {0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-                        {0, 0, 0, 1, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 1},
-                        {0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1},
-                        {0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0},
-                        {0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0, 0},
-                        {0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-                        {0, 1, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1},
-                        {0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0},
-                        {0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0},
-                        {0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}};
+const short int mapa[LARGURA_MAPA][ALTURA_MAPA] = {{0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 1, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 1, 0, 0, 1, 1, 1, 1, 1, 0, 0},
+                        {0, 0, 0, 1, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 1, 0, 0, 0, 1, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 1},
+                        {0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1},
+                        {0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0},
+                        {0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0, 0},
+                        {0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                        {0, 1, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 1, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1},
+                        {0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0},
+                        {0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0},
+                        {0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                        {0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1},
+                        {0, 0, 0, 1, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 1, 0, 1, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1},
+                        {0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 1, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1},
+                        {0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1},
+                        {0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0, 0},
+                        {0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1},
+                        {0, 1, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 1, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1},
+                        {0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0},
+                        {0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0},
+                        {0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0},
+                        {0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 1, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 1, 0, 0, 1, 1, 1, 1, 1, 0, 0},
+                        {0, 0, 0, 1, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 1, 0, 0, 0, 1, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 1},
+                        {0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1},
+                        {0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0},
+                        {0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0, 0},
+                        {0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                        {0, 1, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 1, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1},
+                        {0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0},
+                        {0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0},
+                        {0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                        {0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1},
+                        {0, 0, 0, 1, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 1, 0, 1, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1},
+                        {0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 1, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1},
+                        {0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1},
+                        {0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0, 0},
+                        {0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1},
+                        {0, 1, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 1, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1},
+                        {0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0},
+                        {0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0},
+                        {0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0}};
 
 int main() {
+    //incializa o servidor
     serverInit(6);
     printf("Server is running!\n");
     int sair = 0;
 
-    pack.qtdJogadores = 0;
+    //incializa os jogadores
+    for (int i = 0; i < MAX_JOGADORES; i++){
+        pack.jogadores[i].hp = 0;
+        pack.jogadores[i].hp = 0;
+        pack.jogadores[i].x = 5*i;
+        pack.jogadores[i].y = i;
+        pack.jogadores[i].tile = 0;
+        pack.jogadores[i].character = i;
+    }
+
+    pack.tiro.tile = -1;
 
     while (!sair) {
+        //inicializa o contador de tempo, para trabalhar com framerate
         startTimer();
 
+        //realiza conexao com o cliente
         int id = acceptConnection();
         if (id != NO_CONNECTION){
             sendMsgToClient(&id, sizeof(int), id);
-            if (buscaJogador(id) == -1)
-                criaJogador(id);
+            pack.jogadores[id].hp = 100;
 
             printf("%d conctou-se\n", id);
         }
 
         int tecla = 0;
 
+        //recebe mensagem
         struct msg_ret_t chegou = recvMsg(&tecla);
-        if(chegou.status == MESSAGE_OK){
-            short int posJogadores[20][20] = {0};
-            for (int i = 0; i < pack.qtdJogadores; i++)
-                posJogadores[pack.jogadores[i].x][pack.jogadores[i].y] = 1;
-            Jogador jogador = pack.jogadores[buscaJogador(chegou.client_id)];
-            switch (tecla){
-                case 1:
-                    if (jogador.y > 0 && mapa[jogador.x][jogador.y-1] == 0 && posJogadores[jogador.x][jogador.y-1] == 0){
-                        jogador.y--;
-                        jogador.tile = 2;
-                    }
-                    break;
-                case 2:
-                    if (jogador.y < 19 && mapa[jogador.x][jogador.y+1] == 0 && posJogadores[jogador.x][jogador.y+1] == 0){
-                        jogador.y++;
-                        jogador.tile = 1;
-                    }
-                    break;
-                case 3:
-                    if (jogador.x > 0 && mapa[jogador.x-1][jogador.y] == 0 && posJogadores[jogador.x-1][jogador.y] == 0){
-                        jogador.x--;
-                        jogador.tile = 3;
-                    }
-                    break;
-                case 4:
-                    if (jogador.x < 19 && mapa[jogador.x+1][jogador.y] == 0 && posJogadores[jogador.x+1][jogador.y] == 0){
-                        jogador.x++;
-                        jogador.tile = 0;
-                    }
-                    break;
-            }
+        if (chegou.status == MESSAGE_OK) {
+            id = chegou.client_id;
 
-            pack.jogadores[buscaJogador(chegou.client_id)] = jogador;
+            //insere a posicao dos jogadores numa matriz
+            int posJogadores[LARGURA_MAPA][ALTURA_MAPA] = {0};
+            for (int i = 0; i < MAX_JOGADORES; i++)
+                if (pack.jogadores[i].hp > 0)
+                    posJogadores[pack.jogadores[i].x][pack.jogadores[i].y] = i + 1;
+
+            //realiza uma ação a depender da tecla pressionada
+            switch (tecla) {
+                case 1: //cima
+                    if (pack.jogadores[id].y > 0 && mapa[pack.jogadores[id].x][pack.jogadores[id].y-1] == 0 && posJogadores[pack.jogadores[id].x][pack.jogadores[id].y-1] == 0){
+                        pack.jogadores[id].y--;
+                        pack.jogadores[id].tile = CIMA;
+                    }
+                    break;
+                case 2: //baixo
+                    if (pack.jogadores[id].y < ALTURA_MAPA - 1 && mapa[pack.jogadores[id].x][pack.jogadores[id].y+1] == 0 && posJogadores[pack.jogadores[id].x][pack.jogadores[id].y+1] == 0){
+                        pack.jogadores[id].y++;
+                        pack.jogadores[id].tile = BAIXO;
+                    }
+                    break;
+                case 3: //esquerda
+                    if (pack.jogadores[id].x > 0 && mapa[pack.jogadores[id].x-1][pack.jogadores[id].y] == 0 && posJogadores[pack.jogadores[id].x-1][pack.jogadores[id].y] == 0){
+                        pack.jogadores[id].x--;
+                        pack.jogadores[id].tile = ESQ;
+                    }
+                    break;
+                case 4: //direita
+                    if (pack.jogadores[id].x < LARGURA_MAPA && mapa[pack.jogadores[id].x+1][pack.jogadores[id].y] == 0 && posJogadores[pack.jogadores[id].x+1][pack.jogadores[id].y] == 0){
+                        pack.jogadores[id].x++;
+                        pack.jogadores[id].tile = DIR;
+                    }
+                    break;
+                case 5: //espaço - atira
+                    pack.tiro.tile = pack.jogadores[id].tile;
+                    pack.tiro.x = pack.jogadores[id].x;
+                    pack.tiro.y = pack.jogadores[id].y;
+
+                    FPSLimit();
+
+                    //renderiza (frame a frame) o tiro
+                    int alcance = 0;
+                    while (alcance++ < 8) {
+                        startTimer();
+
+                        if (pack.tiro.tile == CIMA)
+                            pack.tiro.y--;
+                        else if (pack.tiro.tile == BAIXO)
+                            pack.tiro.y++;
+                        else if (pack.tiro.tile == ESQ)
+                            pack.tiro.x--;
+                        else
+                            pack.tiro.x++;
+
+                        if (mapa[pack.tiro.x][pack.tiro.y] != 0)
+                            break;
+                        else if (posJogadores[pack.tiro.x][pack.tiro.y] != 0){
+                            pack.jogadores[posJogadores[pack.tiro.x][pack.tiro.y]-1].hp -= 25;
+                            break;
+                        }
+
+                        //envia o pacote para todos (contendo a posicao da bala)
+                        broadcast(&pack, sizeof(Pack));
+                        FPSLimit();
+                    }
+                    startTimer();
+
+                    pack.tiro.tile = -1;
+            }
         }
 
+        //envia o pacote atualizado para todos
         broadcast(&pack, sizeof(Pack));
 
-        //FPSLimit();
+        //compensa o tempo que falta para o fim do tempo do frame
+        FPSLimit();
     }
 
+    //finaliza os modulos do allegro
     allegroEnd();
 }

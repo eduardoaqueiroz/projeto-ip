@@ -15,3 +15,15 @@ Para isso, vai ser usada a arquitetura cliente-servidor.
 + https://aprendendoallegro.tk/index.php - Site com vários tutoriais com códigos de exemplo pra várias funcionalidades da Allegro (mouse, gráficos, etc).
 
 + https://cin.ufpe.br/~hscs/Files/Resources%20RPGM.zip - Pack de componentes gráficos.
+
+<h3>Instruções básicas:</h3>
+
++ Compilar e rodar o cliente:
+```
+make client
+```
+
++ Compilar e rodar o servidor:
+```
+make server
+```

@@ -78,35 +78,35 @@ int main() {
             printf("%d conctou-se\n", id);
         }
 
-        broadcast(&pack, sizeof(Pack));
-
         int tecla = 0;
 
         struct msg_ret_t chegou = recvMsg(&tecla);
         if(chegou.status == MESSAGE_OK){
+            short int posJogadores[20][20] = {0};
+            for (int i = 0; i < pack.qtdJogadores; i++)
+                posJogadores[pack.jogadores[i].x][pack.jogadores[i].y] = 1;
             Jogador jogador = pack.jogadores[buscaJogador(chegou.client_id)];
-            printf("Tecla: %d\n", tecla);
             switch (tecla){
                 case 1:
-                    if (jogador.y > 0 && mapa[jogador.x][jogador.y-1] == 0){
+                    if (jogador.y > 0 && mapa[jogador.x][jogador.y-1] == 0 && posJogadores[jogador.x][jogador.y-1] == 0){
                         jogador.y--;
                         jogador.tile = 2;
                     }
                     break;
                 case 2:
-                    if (jogador.y < 19 && mapa[jogador.x][jogador.y+1] == 0){
+                    if (jogador.y < 19 && mapa[jogador.x][jogador.y+1] == 0 && posJogadores[jogador.x][jogador.y+1] == 0){
                         jogador.y++;
                         jogador.tile = 1;
                     }
                     break;
                 case 3:
-                    if (jogador.x > 0 && mapa[jogador.x-1][jogador.y] == 0){
+                    if (jogador.x > 0 && mapa[jogador.x-1][jogador.y] == 0 && posJogadores[jogador.x-1][jogador.y] == 0){
                         jogador.x--;
                         jogador.tile = 3;
                     }
                     break;
                 case 4:
-                    if (jogador.x < 19 && mapa[jogador.x+1][jogador.y] == 0){
+                    if (jogador.x < 19 && mapa[jogador.x+1][jogador.y] == 0 && posJogadores[jogador.x+1][jogador.y] == 0){
                         jogador.x++;
                         jogador.tile = 0;
                     }

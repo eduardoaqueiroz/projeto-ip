@@ -38,17 +38,6 @@ short int mapa[20][20] = {{0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                         {0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0},
                         {0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}};
 
-void exibeMapa(){
-    for (int i=0; i<20; i++){
-        for (int j=0; j<20; j++){
-            al_draw_bitmap_region(objects,
-                mapa[i][j]*TILE, 2*TILE,
-                TILE, TILE,
-                TILE * i, TILE * j, 0);
-        }
-    }
-}
-
 int main () {
     if(!coreInit())
         return -1;
@@ -76,7 +65,14 @@ int main () {
     int sair = 0;
     Pack pack, packAux;
 
-    exibeMapa();
+    for (int i=0; i<20; i++){
+        for (int j=0; j<20; j++){
+            al_draw_bitmap_region(objects,
+                mapa[i][j]*TILE, 2*TILE,
+                TILE, TILE,
+                TILE * i, TILE * j, 0);
+        }
+    }
 
     if (recvMsgFromServer(&pack, WAIT_FOR_IT) == sizeof(Pack)) {
         for (int i = 0; i < pack.qtdJogadores; i++){

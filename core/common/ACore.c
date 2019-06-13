@@ -50,8 +50,6 @@ bool coreInit()
         return false;
     }
 
- 	
-
     return true;
 }
 
@@ -174,6 +172,7 @@ void FPSLimit()
 //FOR DEALLOCATING ALL ALLEGRO STUFF
 void allegroEnd()
 {
+    al_destroy_bitmap(objects);
     al_destroy_display(main_window);
     al_destroy_event_queue(eventsQueue);
 }
@@ -183,17 +182,10 @@ void allegroEnd()
 bool fontInit()
 {
     /*------------------------------FONTE--------------------------------*/
-    start = al_load_font("examples/graphicChat/Resources/Fonts/pressStart.ttf", 16, 0);
+    start = al_load_font("core/Resources/Fonts/pressStart.ttf", 16, 0);
     if (!start)
     {
-        fprintf(stderr, "Falha ao carregar \"examples/graphicChat/Resources/Fonts/pressStart.ttf\".\n");
-        return false;
-    }
-
-    ubuntu = al_load_font("examples/graphicChat/Resources/Fonts/Ubuntu-R.ttf", 32, 0);
-    if (!ubuntu)
-    {
-        fprintf(stderr, "Falha ao carregar \"Ubuntu-R.ttf\".\n");
+        fprintf(stderr, "Falha ao carregar \"core/Resources/Fonts/pressStart.ttf\".\n");
         return false;
     }
 
@@ -204,14 +196,8 @@ bool fontInit()
 //MODIFY THIS TO LOAD YOUR OWN GRAPHICS (BITMAP POINTERS ARE DEFINED AT ACORE.H)
 bool loadGraphics()
 {
-    menuScreen = al_load_bitmap("examples/graphicChat/Resources/Etc/titleScreen2.png");
-    if (!menuScreen)
-    {
-        fprintf(stderr, "Falha carregando menuScreen\n");
-        return false;
-    }
 
-    objects = al_load_bitmap("examples/graphicChat/Resources/Tilesets/objects.png");
+    objects = al_load_bitmap("core/Resources/Tilesets/objects.png");
     if (!objects){
         fprintf(stderr, "Falha carregando objects.png\n");
         return false;

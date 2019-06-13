@@ -13,8 +13,6 @@
 #include <string.h>
 
 #define FPS 60
-#define WIDTH  640
-#define HEIGHT 480
 #define IP_MAX_SIZE 100
 
 double startingTime;

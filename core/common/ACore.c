@@ -183,11 +183,5 @@ bool loadGraphics() {
         return false;
     }
 
-    characters = al_load_bitmap("core/Resources/Tilesets/characters.png");
-    if (!objects){
-        fprintf(stderr, "Falha carregando characters.png\n");
-        return false;
-    }
-
     return true;
 }

@@ -38,11 +38,9 @@ ALLEGRO_DISPLAY *main_window;
 ALLEGRO_EVENT_QUEUE *eventsQueue;
 
 //FONT AND BITMAP POINTERS
-ALLEGRO_FONT *ubuntu;
 ALLEGRO_FONT *start;
 
 ALLEGRO_BITMAP *objects;
-ALLEGRO_BITMAP *characters;
 ALLEGRO_BITMAP *menuScreen;
 //========================
 //========================

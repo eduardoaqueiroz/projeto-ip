@@ -119,7 +119,7 @@ int main () {
             for (int i=0; i<LARGURA_REGIAO; i++)
                 for (int j=0; j<LARGURA_REGIAO; j++)
                     al_draw_bitmap_region(objects,
-                        mapa[regiao.x + i][regiao.y + j]*TILE, 2*TILE,
+                        mapa[regiao.x + i][regiao.y + j]*TILE, 0*TILE,
                         TILE, TILE,
                         TILE * i, TILE * j, 0);
 
@@ -127,14 +127,14 @@ int main () {
             for (int i = 0; i < MAX_JOGADORES; i++)
                 if (pack.jogadores[i].hp > 0 && pack.jogadores[i].x >= regiao.x && pack.jogadores[i].x < regiao.xw && pack.jogadores[i].y >= regiao.y && pack.jogadores[i].y < regiao.yh)
                     al_draw_bitmap_region(objects,
-                        pack.jogadores[i].tile*TILE, (5+i)*TILE,
+                        pack.jogadores[i].tile*TILE, (i+1)*TILE,
                         TILE, TILE,
                         TILE * (pack.jogadores[i].x - regiao.x), TILE * (pack.jogadores[i].y - regiao.y), 0);
 
             //desenha tiro
             if (pack.tiro.tile != -1 && pack.tiro.x >= regiao.x && pack.tiro.x < regiao.xw && pack.tiro.y >= regiao.y && pack.tiro.y < regiao.yh)
                 al_draw_bitmap_region(objects,
-                    pack.tiro.tile*TILE, 9*TILE,
+                    pack.tiro.tile*TILE, 7*TILE,
                     TILE, TILE,
                     TILE * (pack.tiro.x - regiao.x), TILE * (pack.tiro.y - regiao.y), 0);
         }

@@ -40,6 +40,18 @@ bool coreInit() {
         fprintf(stderr, "Falha ao inicializar add-on allegro_primitives.\n");
         return false;
     }
+    if(!al_install_audio()) {
+        printf("Falha ao instalar o audio.\n");
+        return 0;
+    }
+    if(!al_init_acodec_addon()) {
+        printf("Falha ai inicializar o codec de audio.\n");
+        return 0;
+    }
+    if(!al_reserve_samples(15)) {
+        printf("Nao foi possivel reservar as amostras de audio necessarias.\n");
+        return 0;
+    }
 
     eventsQueue = al_create_event_queue();
     if (!eventsQueue)
@@ -156,8 +168,12 @@ void FPSLimit() {
 //FOR DEALLOCATING ALL ALLEGRO STUFF
 void allegroEnd() {
     al_destroy_bitmap(objects);
+    al_destroy_bitmap(bg);
+    al_destroy_bitmap(mapaTiles);
     al_destroy_display(main_window);
     al_destroy_event_queue(eventsQueue);
+    al_destroy_font(start);
+    al_destroy_sample(somTiro);
 }
 
 
@@ -180,6 +196,28 @@ bool loadGraphics() {
     objects = al_load_bitmap("core/Resources/Tilesets/objects.png");
     if (!objects){
         fprintf(stderr, "Falha carregando objects.png\n");
+        return false;
+    }
+
+    mapaTiles = al_load_bitmap("core/Resources/Tilesets/mapa.png");
+    if (!mapaTiles){
+        fprintf(stderr, "Falha carregando tileSet do mapa.png\n");
+        return false;
+    }
+
+    bg = al_load_bitmap("core/Resources/Tilesets/bg.jpg");
+    if (!bg){
+        fprintf(stderr, "Falha carregando a imagem de fundo da tela inicial.png\n");
+        return false;
+    }
+
+    return true;
+}
+
+bool loadSounds(){
+    somTiro = al_load_sample("core/Resources/Etc/shot.ogg");
+    if (!somTiro){
+        fprintf(stderr, "Falha carregando som somTiro\n");
         return false;
     }
 

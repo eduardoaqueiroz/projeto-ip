@@ -6,6 +6,8 @@
 #include <allegro5/allegro_primitives.h>
 #include <allegro5/allegro_font.h>
 #include <allegro5/allegro_ttf.h>
+#include <allegro5/allegro_audio.h>
+#include <allegro5/allegro_acodec.h>
 #include <stdbool.h>
 #include <stdio.h>
 #include <math.h>
@@ -15,7 +17,7 @@
 #define FPS 40.0
 #define IP_MAX_SIZE 100
 
-#define MAX_JOGADORES 6
+#define MAX_JOGADORES 4
 
 #define LARGURA 768
 #define ALTURA 512
@@ -37,13 +39,21 @@ double startingTime;
 ALLEGRO_DISPLAY *main_window;
 ALLEGRO_EVENT_QUEUE *eventsQueue;
 
-//FONT AND BITMAP POINTERS
+// Estruturas da tela de menu.
 ALLEGRO_FONT *start;
 
+// Estruturas da tela de jogo.
+ALLEGRO_SAMPLE *somTiro;
 ALLEGRO_BITMAP *objects;
 ALLEGRO_BITMAP *menuScreen;
-//========================
-//========================
+ALLEGRO_BITMAP *mapaTiles;
+
+// Estruturas da tela de opcoes.
+ALLEGRO_BITMAP *bg;
+ALLEGRO_FONT *somTitulo;
+ALLEGRO_FONT *somSituacao;
+ALLEGRO_FONT *avisoEsc;
+ALLEGRO_FONT *interruptor;
 
 //STRUCTS
 typedef struct {
@@ -87,6 +97,7 @@ void FPSLimit();
 //RESOURCE LOADING FUNCTIONS
 bool loadGraphics();
 bool fontInit();
+bool loadSounds();
 
 //INPUT READING FUNCTION
 void readInput(ALLEGRO_EVENT event, char str[], int limit);

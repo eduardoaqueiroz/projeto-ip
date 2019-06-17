@@ -40,7 +40,10 @@ ALLEGRO_DISPLAY *main_window;
 ALLEGRO_EVENT_QUEUE *eventsQueue;
 
 // Estruturas da tela de menu.
-ALLEGRO_FONT *start;
+ALLEGRO_FONT *titulo;
+ALLEGRO_FONT *subtitulo;
+ALLEGRO_FONT *info;
+ALLEGRO_FONT *infoMaior;
 
 // Estruturas da tela de jogo.
 ALLEGRO_SAMPLE *somTiro;
@@ -50,7 +53,7 @@ ALLEGRO_BITMAP *mapaTiles;
 
 // Estruturas da tela de opcoes.
 ALLEGRO_BITMAP *bg;
-ALLEGRO_FONT *somTitulo;
+ALLEGRO_AUDIO_STREAM *somMenu;
 ALLEGRO_FONT *somSituacao;
 ALLEGRO_FONT *avisoEsc;
 ALLEGRO_FONT *interruptor;
@@ -80,7 +83,12 @@ typedef struct {
 typedef struct {
     Jogador jogadores[MAX_JOGADORES];
     Tiro tiro;
-} Pack;
+} PacoteServidor;
+
+typedef struct {
+    int tecla;
+    int comecou;
+} PacoteCliente;
 
 
 //MAIN ALLEGRO FUNCTIONS

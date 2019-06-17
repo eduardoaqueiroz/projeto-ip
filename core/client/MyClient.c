@@ -59,12 +59,44 @@ Regiao defineRegiao(int x, int y){
     return regiao;
 }
 
+void exibeMensagem(char str[50]){
+    int sair = 0;
+
+    while(!sair) {
+        startTimer();
+
+        al_set_audio_stream_playing(somMenu, true);
+
+        al_set_target_bitmap(buffer_janela);
+        al_clear_to_color(al_map_rgb(47, 47, 47));
+
+        al_draw_scaled_bitmap(bg, 0, 0, al_get_bitmap_width(bg), al_get_bitmap_height(bg), 0, 0, LARGURA, ALTURA, 0);
+
+        al_draw_text(subtitulo, al_map_rgb(255,255,255), LARGURA/2, 250, ALLEGRO_ALIGN_CENTER, str);
+
+        al_set_target_bitmap(al_get_backbuffer(main_window));
+        al_clear_to_color(al_map_rgb(0,0,0));
+        al_draw_scaled_bitmap(buffer_janela, 0, 0, LARGURA, ALTURA, 0, 0, LARGURA, ALTURA, 0);
+        al_flip_display();
+
+        ALLEGRO_EVENT event;
+        al_wait_for_event(eventsQueue, &event);
+
+        if (event.type == ALLEGRO_EVENT_DISPLAY_CLOSE)
+            sair = 1;
+
+        FPSLimit();
+    }
+
+    allegroEnd();
+}
+
 int main () {
     //inciializa os modilos do allegro
     if(!coreInit())
         return -1;
 
-    if (!windowInit(LARGURA, ALTURA, "Target Server"))
+    if (!windowInit(LARGURA, ALTURA, "CInFIRE"))
         return -1;
 
     if(!inputInit())
@@ -81,28 +113,211 @@ int main () {
 
     buffer_janela = al_create_bitmap(LARGURA, ALTURA);
 
-    char serverIP[] = "127.0.0.1";
+    int sairInic = 0;
+
+    int opc = 0;
+
+    al_attach_audio_stream_to_mixer(somMenu, al_get_default_mixer());
+    al_set_audio_stream_playmode(somMenu, ALLEGRO_PLAYMODE_LOOP);
+
+    while(!sairInic) {
+        startTimer();
+
+        al_set_target_bitmap(buffer_janela);
+        al_clear_to_color(al_map_rgb(47, 47, 47));
+
+        al_draw_scaled_bitmap(bg, 0, 0, al_get_bitmap_width(bg), al_get_bitmap_height(bg), 0, 0, LARGURA, ALTURA, 0);
+
+        al_draw_text(subtitulo, al_map_rgb(255,255,255), LARGURA - 40, 350, ALLEGRO_ALIGN_RIGHT, "JOGAR");
+        al_draw_text(subtitulo, al_map_rgb(255,255,255), LARGURA - 40, 390, ALLEGRO_ALIGN_RIGHT, "OPCOES");
+        al_draw_text(subtitulo, al_map_rgb(255,255,255), LARGURA - 40, 430, ALLEGRO_ALIGN_RIGHT, "SAIR");
+
+        if (opc == 0)
+            al_draw_text(subtitulo, al_map_rgb(255,200,0), LARGURA - 40, 350, ALLEGRO_ALIGN_RIGHT, "JOGAR");
+        else if (opc == 1)
+            al_draw_text(subtitulo, al_map_rgb(255,200,0), LARGURA - 40, 390, ALLEGRO_ALIGN_RIGHT, "OPCOES");
+        else
+            al_draw_text(subtitulo, al_map_rgb(255,200,0), LARGURA - 40, 430, ALLEGRO_ALIGN_RIGHT, "SAIR");
+
+        al_set_target_bitmap(al_get_backbuffer(main_window));
+        al_clear_to_color(al_map_rgb(0,0,0));
+        al_draw_scaled_bitmap(buffer_janela, 0, 0, LARGURA, ALTURA, 0, 0, LARGURA, ALTURA, 0);
+        al_flip_display();
+
+        ALLEGRO_EVENT event;
+        al_wait_for_event(eventsQueue, &event);
+
+        if(event.type == ALLEGRO_EVENT_KEY_DOWN) {
+            if(event.keyboard.keycode == ALLEGRO_KEY_UP && opc > 0)
+                opc--;
+            else if (event.keyboard.keycode == ALLEGRO_KEY_DOWN && opc < 2)
+                opc++;
+            else if (event.keyboard.keycode == ALLEGRO_KEY_ENTER && opc == 0)
+                sairInic = 1;
+            else if (event.keyboard.keycode == ALLEGRO_KEY_ENTER && opc == 1)
+                sairInic = -1; //opcoes
+            else if (event.keyboard.keycode == ALLEGRO_KEY_ENTER && opc == 2)
+                sairInic = -1;
+        } else if(event.type == ALLEGRO_EVENT_DISPLAY_CLOSE)
+            sairInic = -1;
+
+        FPSLimit();
+    }
+
+    if (sairInic == -1){
+        allegroEnd();
+        return 0;
+    }
+
+    int sairIpReq = 0;
+    char ipServidor[20] = {0};
+    bool enter = 1;
+
+    while(!sairIpReq) {
+        startTimer();
+
+        al_set_target_bitmap(buffer_janela);
+        al_clear_to_color(al_map_rgb(47, 47, 47));
+
+        al_draw_scaled_bitmap(bg, 0, 0, al_get_bitmap_width(bg), al_get_bitmap_height(bg), 0, 0, LARGURA, ALTURA, 0);
+        al_draw_text(titulo, al_map_rgb(255,255,255), LARGURA/2, 150, ALLEGRO_ALIGN_CENTER, "DIGITE SEU IP:");
+        al_draw_text(subtitulo, al_map_rgb(255,255,255), LARGURA/2, 250, ALLEGRO_ALIGN_CENTER, ipServidor);
+
+        al_set_target_bitmap(al_get_backbuffer(main_window));
+        al_clear_to_color(al_map_rgb(0,0,0));
+        al_draw_scaled_bitmap(buffer_janela, 0, 0, LARGURA, ALTURA, 0, 0, LARGURA, ALTURA, 0);
+        al_flip_display();
+
+        ALLEGRO_EVENT event;
+        al_wait_for_event(eventsQueue, &event);
+
+        if (event.type == ALLEGRO_EVENT_KEY_CHAR) {
+            if ((event.keyboard.unichar >= '0' && event.keyboard.unichar <= '9') || event.keyboard.unichar == '.')
+                ipServidor[strlen(ipServidor)] = event.keyboard.unichar;
+            else if (event.keyboard.keycode == ALLEGRO_KEY_BACKSPACE)
+                ipServidor[strlen(ipServidor) - 1] = 0;
+            else if (event.keyboard.keycode == ALLEGRO_KEY_ENTER && enter == false)
+                sairIpReq = 1;
+        } else if (event.type == ALLEGRO_EVENT_DISPLAY_CLOSE)
+            sairIpReq = -1;
+
+        enter = 0;
+        FPSLimit();
+    }
+
+    if (sairIpReq == -1){
+        allegroEnd();
+        return 0;
+    }
+
+    al_set_audio_stream_playing(somMenu, false);
 
     int id = -1;
 
     //estabelece conexão com o servidor
-    connectToServer(serverIP);
+    connectToServer(ipServidor);
     recvMsgFromServer(&id, WAIT_FOR_IT); //recebe o id do cliente
-    printf("id: %d\n", id);
 
-    int sair = 0;
-    Pack pack;
+    if (id < 0 || id >= MAX_JOGADORES){
+        exibeMensagem("Falha na conexão");
+        return -1;
+    }
 
-    while(!sair){
+    if (id == 0) {
+        int sairEspera = 0;
+
+        PacoteCliente pacoteCliente;
+        pacoteCliente.comecou = 0;
+        pacoteCliente.tecla = 0;
+
+        while(!sairEspera) {
+            al_set_target_bitmap(buffer_janela);
+            al_clear_to_color(al_map_rgb(47, 47, 47));
+
+            al_draw_scaled_bitmap(bg, 0, 0, al_get_bitmap_width(bg), al_get_bitmap_height(bg), 0, 0, LARGURA, ALTURA, 0);
+            al_draw_text(subtitulo, al_map_rgb(255,255,255), LARGURA/2, 250, ALLEGRO_ALIGN_CENTER, "Pressione espaço para iniciar");
+
+            al_set_target_bitmap(al_get_backbuffer(main_window));
+            al_clear_to_color(al_map_rgb(0,0,0));
+            al_draw_scaled_bitmap(buffer_janela, 0, 0, LARGURA, ALTURA, 0, 0, LARGURA, ALTURA, 0);
+            al_flip_display();
+
+            if(!al_is_event_queue_empty(eventsQueue)) {
+                ALLEGRO_EVENT event;
+                al_wait_for_event(eventsQueue, &event);
+
+                if (event.type == ALLEGRO_EVENT_DISPLAY_CLOSE)
+                    sairEspera = -1;
+                else if (event.keyboard.keycode == ALLEGRO_KEY_SPACE && enter == false)
+                    pacoteCliente.comecou = 1;
+            }
+
+            sendMsgToServer(&pacoteCliente, sizeof(PacoteCliente));
+
+            PacoteServidor pacoteServidor;
+            recvMsgFromServer(&pacoteServidor, WAIT_FOR_IT);
+            if (pacoteServidor.jogadores[0].tile >= 0 && pacoteServidor.jogadores[0].tile <= 3)
+                sairEspera = 1;
+        }
+
+        if (sairEspera == -1) {
+            allegroEnd();
+            return -1;
+        }
+    } else {
+        int sairEspera = 0;
+        while(!sairEspera) {
+            al_set_target_bitmap(buffer_janela);
+            al_clear_to_color(al_map_rgb(47, 47, 47));
+
+            al_draw_scaled_bitmap(bg, 0, 0, al_get_bitmap_width(bg), al_get_bitmap_height(bg), 0, 0, LARGURA, ALTURA, 0);
+
+            al_draw_text(subtitulo, al_map_rgb(255,255,255), LARGURA/2, 250, ALLEGRO_ALIGN_CENTER, "Aguardando início da partida");
+
+            al_set_target_bitmap(al_get_backbuffer(main_window));
+            al_clear_to_color(al_map_rgb(0,0,0));
+            al_draw_scaled_bitmap(buffer_janela, 0, 0, LARGURA, ALTURA, 0, 0, LARGURA, ALTURA, 0);
+            al_flip_display();
+
+            if(!al_is_event_queue_empty(eventsQueue)) {
+                ALLEGRO_EVENT event;
+                al_wait_for_event(eventsQueue, &event);
+
+                if (event.type == ALLEGRO_EVENT_DISPLAY_CLOSE)
+                    sairEspera = -1;
+            }
+
+            PacoteServidor pacoteServidor;
+            recvMsgFromServer(&pacoteServidor, WAIT_FOR_IT);
+            if (pacoteServidor.jogadores[0].tile >= 0 && pacoteServidor.jogadores[0].tile <= 3)
+                sairEspera = 1;
+        }
+
+        if (sairEspera == -1){
+            allegroEnd();
+            return -1;
+        }
+    }
+
+    bool sairJogo = 0;
+    int ganhou = -1;
+    PacoteServidor pacoteServidor;
+    PacoteCliente pacoteCliente;
+    pacoteCliente.comecou = 1;
+
+    while(!sairJogo) {
         //cria uma janela auxiliar e deixa preta
         al_set_target_bitmap(buffer_janela);
         al_clear_to_color(al_map_rgb(47, 47, 47));
 
-        if(recvMsgFromServer(&pack, WAIT_FOR_IT) == sizeof(Pack)) {
-            if (pack.jogadores[id].hp == 0)
-                break; //perdeu
+        if(recvMsgFromServer(&pacoteServidor, WAIT_FOR_IT) == sizeof(PacoteServidor)) {
+            if (pacoteServidor.jogadores[id].hp == 0){
+                ganhou = 0;
+                break;
+            }
 
-            Regiao regiao = defineRegiao(pack.jogadores[id].x, pack.jogadores[id].y);
+            Regiao regiao = defineRegiao(pacoteServidor.jogadores[id].x, pacoteServidor.jogadores[id].y);
+            int numJogadores = 0;
 
             //renderiza mapa
             for (int i=0; i<LARGURA_REGIAO; i++)
@@ -115,18 +330,26 @@ int main () {
 
             //renderiza jogadores
             for (int i = 0; i < MAX_JOGADORES; i++)
-                if (pack.jogadores[i].hp > 0 && pack.jogadores[i].x >= regiao.x && pack.jogadores[i].x < regiao.xw && pack.jogadores[i].y >= regiao.y && pack.jogadores[i].y < regiao.yh)
-                    al_draw_bitmap_region(objects,
-                        pack.jogadores[i].tile*TILE, (i+1)*TILE,
-                        TILE, TILE,
-                        TILE * (pack.jogadores[i].x - regiao.x), TILE * (pack.jogadores[i].y - regiao.y), 0);
+                if (pacoteServidor.jogadores[i].hp > 0){
+                    numJogadores++;
+                    if (pacoteServidor.jogadores[i].x >= regiao.x && pacoteServidor.jogadores[i].x < regiao.xw && pacoteServidor.jogadores[i].y >= regiao.y && pacoteServidor.jogadores[i].y < regiao.yh)
+                        al_draw_bitmap_region(objects,
+                            pacoteServidor.jogadores[i].tile*TILE, (i+1)*TILE,
+                            TILE, TILE,
+                            TILE * (pacoteServidor.jogadores[i].x - regiao.x), TILE * (pacoteServidor.jogadores[i].y - regiao.y), 0);
+                }
+
+            if (numJogadores == 1){
+                ganhou = 1;
+                break;
+            }
 
             //renderiza tiro
-            if (pack.tiro.tile != -1 && pack.tiro.x >= regiao.x && pack.tiro.x < regiao.xw && pack.tiro.y >= regiao.y && pack.tiro.y < regiao.yh){
+            if (pacoteServidor.tiro.tile != -1 && pacoteServidor.tiro.x >= regiao.x && pacoteServidor.tiro.x < regiao.xw && pacoteServidor.tiro.y >= regiao.y && pacoteServidor.tiro.y < regiao.yh){
                 al_draw_bitmap_region(objects,
-                    pack.tiro.tile*TILE, 7*TILE,
+                    pacoteServidor.tiro.tile*TILE, 7*TILE,
                     TILE, TILE,
-                    TILE * (pack.tiro.x - regiao.x), TILE * (pack.tiro.y - regiao.y), 0);
+                    TILE * (pacoteServidor.tiro.x - regiao.x), TILE * (pacoteServidor.tiro.y - regiao.y), 0);
                 if (tiroVerif == 0){
                     al_play_sample(somTiro, 0.7, 0.0, 1.0, ALLEGRO_PLAYMODE_ONCE, NULL);
                 }
@@ -134,42 +357,46 @@ int main () {
             } else
                 tiroVerif = 0;
 
-            //renderiza informacoes
-            if (pack.jogadores[id].hp == 25){
-                //1 coracao
-            } else if (pack.jogadores[id].hp == 50) {
-                //2 coracoes
-            } else if (pack.jogadores[id].hp == 75){
-                //3 coracoes
-            } else {
-                //4 coracoes
-            }
+            char texto[20];
+            sprintf(texto, "Jogadores vivos: %d", numJogadores);
 
+            //renderiza informacoes
+            al_draw_text(info, al_map_rgb(255, 255, 255), LARGURA - 120, 5, ALLEGRO_ALIGN_RIGHT, texto);
+            al_draw_text(infoMaior, al_map_rgb(0, 0, 0), LARGURA - 8, 2, ALLEGRO_ALIGN_RIGHT, "♥ ♥ ♥ ♥");
+            al_draw_text(info, al_map_rgb(100, 100, 100), LARGURA - 10, 5, ALLEGRO_ALIGN_RIGHT, "♥  ♥  ♥  ♥");
+            if (pacoteServidor.jogadores[id].hp ==  25)
+                al_draw_text(info, al_map_rgb(255, 0, 0), LARGURA - 10, 5, ALLEGRO_ALIGN_RIGHT, "♥         ");
+            else if (pacoteServidor.jogadores[id].hp == 50)
+                al_draw_text(info, al_map_rgb(255, 0, 0), LARGURA - 10, 5, ALLEGRO_ALIGN_RIGHT, "♥  ♥      ");
+            else if (pacoteServidor.jogadores[id].hp == 75)
+                al_draw_text(info, al_map_rgb(255, 0, 0), LARGURA - 10, 5, ALLEGRO_ALIGN_RIGHT, "♥  ♥  ♥   ");
+            else
+                al_draw_text(info, al_map_rgb(255, 0, 0), LARGURA - 10, 5, ALLEGRO_ALIGN_RIGHT, "♥  ♥  ♥  ♥");
         }
 
         //captura eventos
         while(!al_is_event_queue_empty(eventsQueue)){
-                ALLEGRO_EVENT event;
-                int tecla = 0;
+            ALLEGRO_EVENT event;
+            pacoteCliente.tecla = 0;
 
-                //recebe evento do teclado
-                al_wait_for_event(eventsQueue, &event);
-                if(event.type == ALLEGRO_EVENT_KEY_CHAR){
-                    if(event.keyboard.keycode == ALLEGRO_KEY_UP)
-                        tecla = 1;
+            //recebe evento do pacoteCliente.teclado
+            al_wait_for_event(eventsQueue, &event);
+            if(event.type == ALLEGRO_EVENT_KEY_CHAR){
+                if(event.keyboard.keycode == ALLEGRO_KEY_UP)
+                    pacoteCliente.tecla = 1;
                     else if (event.keyboard.keycode == ALLEGRO_KEY_DOWN)
-                        tecla = 2;
+                        pacoteCliente.tecla = 2;
                     else if (event.keyboard.keycode == ALLEGRO_KEY_LEFT)
-                        tecla = 3;
+                        pacoteCliente.tecla = 3;
                     else if (event.keyboard.keycode == ALLEGRO_KEY_RIGHT)
-                        tecla = 4;
+                        pacoteCliente.tecla = 4;
                     else if (event.keyboard.keycode == ALLEGRO_KEY_SPACE)
-                        tecla = 5;
+                        pacoteCliente.tecla = 5;
 
-                    //envia evento recebido para o servidor
-                    sendMsgToServer(&tecla, sizeof(int));
-                } else if(event.type == ALLEGRO_EVENT_DISPLAY_CLOSE)
-                    sair = 1;
+                //envia evento recebido para o servidor
+                sendMsgToServer(&pacoteCliente, sizeof(PacoteCliente));
+            } else if(event.type == ALLEGRO_EVENT_DISPLAY_CLOSE)
+                sairJogo = 1;
         }
 
             //exibe os componentes graficos na janela principal
@@ -178,6 +405,11 @@ int main () {
             al_draw_scaled_bitmap(buffer_janela, 0, 0, LARGURA, ALTURA, 0, 0, LARGURA, ALTURA, 0);
             al_flip_display();
     }
+
+    if (ganhou == 1)
+        exibeMensagem("Parabéns, voce ganhou!");
+    else if (ganhou == 0)
+        exibeMensagem("GAME OVER");
 
     //finaliza os modulos do allegro
     allegroEnd();

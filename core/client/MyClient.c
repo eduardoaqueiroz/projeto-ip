@@ -321,7 +321,7 @@ int main () {
 
             //renderiza mapa
             for (int i=0; i<LARGURA_REGIAO; i++)
-                for (int j=0; j<LARGURA_REGIAO; j++)
+                for (int j=0; j<ALTURA_REGIAO; j++)
                     if (regiao.x + i >= 0 && regiao.y + j >= 0 && regiao.x + i < LARGURA_MAPA && regiao.y + j < ALTURA_MAPA)
                         al_draw_bitmap_region(mapaTiles,
                             mapa[regiao.x + i][regiao.y + j]*TILE, 0,

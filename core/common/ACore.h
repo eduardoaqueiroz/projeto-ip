@@ -53,6 +53,7 @@ ALLEGRO_BITMAP *mapaTiles;
 
 // Estruturas da tela de opcoes.
 ALLEGRO_BITMAP *bg;
+ALLEGRO_BITMAP *bgInit;
 ALLEGRO_AUDIO_STREAM *somMenu;
 ALLEGRO_FONT *somSituacao;
 ALLEGRO_FONT *avisoEsc;

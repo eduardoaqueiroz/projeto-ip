@@ -109,6 +109,7 @@ void FPSLimit() {
 void allegroEnd() {
     al_destroy_bitmap(objects);
     al_destroy_bitmap(bg);
+    al_destroy_bitmap(bgInit);
     al_destroy_bitmap(mapaTiles);
     al_destroy_display(main_window);
     al_destroy_event_queue(eventsQueue);
@@ -167,6 +168,12 @@ bool loadGraphics() {
 
     bg = al_load_bitmap("core/Resources/Tilesets/bg.png");
     if (!bg){
+        fprintf(stderr, "Falha carregando a imagem de fundo padrao.png\n");
+        return false;
+    }
+    
+    bgInit = al_load_bitmap("core/Resources/Tilesets/init.png");
+    if (!bgInit){
         fprintf(stderr, "Falha carregando a imagem de fundo da tela inicial.png\n");
         return false;
     }

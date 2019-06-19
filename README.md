@@ -17,6 +17,8 @@ Para isso, vai ser usada a arquitetura cliente-servidor.
 
 + Raimundo Lázaro (rlf2)
 
++ Victor Emanuel (veps)
+
 
 <h3>Links úteis (tutoriais utilizados):</h3>
 
